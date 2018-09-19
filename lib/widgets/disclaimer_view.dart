@@ -12,9 +12,9 @@ class DisclaimerView extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            Text(globals.disclaimerButtonText),
+            Text(globals.disclaimerTitle),
             RaisedButton(
-              child: Text(globals.disclaimerTitle),
+              child: Text(globals.disclaimerButtonText),
               onPressed: () {
                 Navigator.pushReplacementNamed(
                     context, RouteNames.BaseViewRoute);
