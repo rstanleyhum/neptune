@@ -30,8 +30,8 @@ class ArticleModel {
 }
 
 class ArticlePayloadModel {
-  List<ArticleModel> articles;
-  int index;
+  final List<ArticleModel> articles;
+  final int index;
 
   ArticlePayloadModel({
     this.articles,

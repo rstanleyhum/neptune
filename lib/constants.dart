@@ -33,6 +33,6 @@ const String disclaimerButtonText = "I accept";
 const int loadArticlesDelay = 5; // for debugging
 const int splashPageDelay = 3;
 
-const String initialNewsArticle = "icu_section.md";
-const String initialHandbookArticle = "ed_section.md";
+const String initialNewsArticle = "specialty_by_topic_section.md";
+const String initialHandbookArticle = "neonatal_gbs_mom.md";
 const String initialPharmaArticle = "nicu_section.md";
