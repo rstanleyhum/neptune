@@ -1,24 +1,27 @@
 import 'package:flutter/material.dart';
 
-int initialTabIndex = 0;
-String materialAppTitle = 'Neptune Demo';
+const String materialAppTitle = 'Neptune Demo';
 
-String handbookTabTitle = 'Handbook';
-String newsTabTitle = 'News';
-String pharmaTabTitle = 'Pharma';
+const String handbookTabTitle = 'Handbook';
+const String newsTabTitle = 'News';
+const String pharmaTabTitle = 'Pharma';
 
-String handbookViewportMessage = 'Handbook Viewport';
-String newsViewportMessage = 'News Viewport';
-String pharmaViewportMessage = 'Pharma Viewport';
+const int initialTabIndex = 0;
+const String initialTabTitle = newsTabTitle;
 
-String mainDrawerHeaderTitle = 'MD Handbook';
-double mainDrawerHeaderFontSize = 24.0;
 
-String drawerItemOne = 'Item 1';
-String drawerItemTwo = 'Item 2';
+const String handbookViewportMessage = 'Handbook Viewport';
+const String newsViewportMessage = 'News Viewport';
+const String pharmaViewportMessage = 'Pharma Viewport';
 
-Color themeColor = Colors.blue;
+const String mainDrawerHeaderTitle = 'MD Handbook';
+const double mainDrawerHeaderFontSize = 24.0;
 
-IconData handbookIcon = Icons.library_books;
-IconData newsIcon = Icons.local_cafe;
-IconData pharmaIcon = Icons.local_pharmacy;
+const String drawerItemOne = 'Item 1';
+const String drawerItemTwo = 'Item 2';
+
+const Color themeColor = Colors.blue;
+
+const IconData handbookIcon = Icons.library_books;
+const IconData newsIcon = Icons.local_cafe;
+const IconData pharmaIcon = Icons.local_pharmacy;
