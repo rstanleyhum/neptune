@@ -23,7 +23,6 @@ class _NewsSectionControlState extends State<NewsSectionControl>
   }
 
   TabController _createController(ArticlePayloadModel payload) {
-    print("_createController: ${payload.index}");
     return TabController(
       length: payload.articles.length,
       vsync: this,
