@@ -25,3 +25,5 @@ const Color themeColor = Colors.blue;
 const IconData handbookIcon = Icons.library_books;
 const IconData newsIcon = Icons.local_cafe;
 const IconData pharmaIcon = Icons.local_pharmacy;
+
+const String splashPageTitle = "Splash Page";
