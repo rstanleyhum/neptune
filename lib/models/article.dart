@@ -12,8 +12,8 @@ class Article {
   List<String> children;
   List<String> related;
 
-  Article(this.key, this.title, this.date, this.intro, this.byline,
-      this.mdcontent, this.parent, this.related);
+  Article({this.key, this.title, this.date, this.intro, this.byline,
+      this.mdcontent, this.parent, this.children, this.related});
 
   Article.fromContents(String key, String contents) {
     this.key = key;

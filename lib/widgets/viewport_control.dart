@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 
+import '../providers/article_provider.dart';
+import '../viewmodels/article_payload.dart';
+
 import 'view_section.dart';
-import 'test_page.dart';
+import 'article_view.dart';
 
 class ViewportControl extends StatefulWidget {
   @override
@@ -10,29 +13,51 @@ class ViewportControl extends StatefulWidget {
 
 class _ViewportControlState extends State<ViewportControl>
     with SingleTickerProviderStateMixin {
-  TabController _controller;
-
-  List<Widget> _createPages() {
-    return []
-      ..add(TestPage(number: 1))
-      ..add(TestPage(number: 2))
-      ..add(TestPage(number: 3));
+  
+  List<Widget> _createPages(ArticlePayloadModel payload) {
+    return payload.articles.map( (v) {
+      return ArticleView(vm: v);
+    }).toList();
   }
-  @override
-  void initState() {
-    super.initState();
-    _controller = TabController(
+
+  TabController _createController(ArticlePayloadModel payload) {
+    return TabController(
+      length: payload.articles.length,
       vsync: this,
-      length: 3,
-      initialIndex: 0,
+      initialIndex: payload.index,
     );
   }
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return ViewSection(
-      pages: _createPages(),
-      controller: _controller,
+    final articleBloc = ArticleProvider.of(context);
+    return StreamBuilder<ArticlePayloadModel>(
+      stream: articleBloc.newsPayload,
+      initialData: null,
+      builder: (context, snapshot) {
+        if (snapshot == null || !snapshot.hasData) {
+          return ViewSection(
+            pages: <Widget>[
+              Container(),
+            ],
+            controller: TabController(
+              length: 1,
+              vsync: this,
+              initialIndex: 0,
+            ),
+          );
+        }
+
+        return ViewSection(
+          pages: _createPages(snapshot.data),
+          controller: _createController(snapshot.data),
+        );
+      },  
     );
   }
 }

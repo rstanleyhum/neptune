@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:rxdart/rxdart.dart';
 
-import '../models/ui_state.dart';
+import '../viewmodels/ui_state.dart';
 
 class UIBloc {
   final _uiState = UIState();
@@ -16,6 +16,8 @@ class UIBloc {
 
   void dispose() {
     _setTabIndexController.close();
+    _tabIndexSubject.close();
+    _tabNameSubject.close();
   }
 
   Sink<int> get setTabIndex => _setTabIndexController.sink;
