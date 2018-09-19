@@ -5,6 +5,7 @@ import '../route_names.dart' as routeNames;
 
 import 'base_view.dart';
 import 'splash_view.dart';
+import 'disclaimer_view.dart';
 
 class MaterialBase extends StatelessWidget {
   @override
@@ -15,6 +16,7 @@ class MaterialBase extends StatelessWidget {
         ),
         home: SplashView(),
         routes: <String, WidgetBuilder>{
+          routeNames.DisclaimerViewRoute: (context) => DisclaimerView(),
           routeNames.BaseViewRoute: (context) => BaseView(),
         },
       );

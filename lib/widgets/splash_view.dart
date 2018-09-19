@@ -18,11 +18,11 @@ class _SplashViewState extends State<SplashView> {
   }
 
   void navigationPage() {
-    Navigator.of(context).pushReplacementNamed(RouteNames.BaseViewRoute);
+    Navigator.of(context).pushReplacementNamed(RouteNames.DisclaimerViewRoute);
   }
 
   startTime() async {
-    var _duration = Duration(seconds: 2);
+    var _duration = Duration(seconds: 3);
     return Timer(_duration, navigationPage);
   }
 

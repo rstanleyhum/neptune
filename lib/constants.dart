@@ -27,3 +27,5 @@ const IconData newsIcon = Icons.local_cafe;
 const IconData pharmaIcon = Icons.local_pharmacy;
 
 const String splashPageTitle = "Splash Page";
+const String disclaimerTitle = "Disclaimer";
+const String disclaimerButtonText = "I accept";
