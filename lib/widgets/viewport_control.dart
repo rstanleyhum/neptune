@@ -16,11 +16,37 @@ class ViewportControl extends StatelessWidget {
       stream: uiBloc.tabIndex,
       initialData: globals.initialTabIndex,
       builder: (context, snapshot) {
-        return <Widget>[
-          NewsSectionControl(),
-          HandbookSectionControl(),
-          PharmaSectionControl(),
-        ][snapshot.data];
+        return Stack(
+          //
+          // Note Offstage starts/stops painting; TickerMode starts/stops animation
+          // Keeps everything in the tree so that it doesn't automatically rebuild each
+          //  widget
+          // See: https://stackoverflow.com/questions/45235570/how-to-use-bottomnavigationbar-with-navigator/45992604#45992604
+          //
+          children: <Widget>[
+            Offstage(
+              offstage: snapshot.data != globals.newsTabIndex,
+              child: TickerMode(
+                enabled: snapshot.data == globals.newsTabIndex,
+                child: NewsSectionControl(),
+              ),
+            ),
+            Offstage(
+              offstage: snapshot.data != globals.handbookTabIndex,
+              child: TickerMode(
+                enabled: snapshot.data == globals.handbookTabIndex,
+                child: HandbookSectionControl(),
+              ),
+            ),
+            Offstage(
+              offstage: snapshot.data != globals.pharmaTabIndex,
+              child: TickerMode(
+                enabled: snapshot.data == globals.pharmaTabIndex,
+                child: PharmaSectionControl(),
+              ),
+            ),
+          ],
+        );
       },
     );
   }

@@ -14,11 +14,11 @@ class NewsSectionControl extends StatefulWidget {
 }
 
 class _NewsSectionControlState extends State<NewsSectionControl>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   
   List<Widget> _createPages(ArticlePayloadModel payload) {
     return payload.articles.map( (v) {
-      return ArticleView(vm: v);
+      return ArticleView(key: PageStorageKey("news: article: ${v.key}"), vm: v);
     }).toList();
   }
 
@@ -51,6 +51,7 @@ class _NewsSectionControlState extends State<NewsSectionControl>
         var pages = _createPages(snapshot.data);
         var controller = _createController(snapshot.data);
         return ViewSection(
+          key: Key("news: ${snapshot.data.index}"),
           pages: pages,
           controller: controller,
         );

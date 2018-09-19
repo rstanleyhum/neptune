@@ -14,11 +14,11 @@ class HandbookSectionControl extends StatefulWidget {
 }
 
 class _HandbookSectionControlState extends State<HandbookSectionControl>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   
   List<Widget> _createPages(ArticlePayloadModel payload) {
     return payload.articles.map( (v) {
-      return ArticleView(vm: v);
+      return ArticleView(key: PageStorageKey("handbook: article: ${v.key}"), vm: v);
     }).toList();
   }
 
@@ -51,6 +51,7 @@ class _HandbookSectionControlState extends State<HandbookSectionControl>
         var pages = _createPages(snapshot.data);
         var controller = _createController(snapshot.data);
         return ViewSection(
+          key: Key("handbook: ${snapshot.data.index}"),
           pages: pages,
           controller: controller,
         );

@@ -7,6 +7,9 @@ const String newsTabTitle = 'News';
 const String pharmaTabTitle = 'Pharma';
 
 const int initialTabIndex = 0;
+const int newsTabIndex = 0;
+const int handbookTabIndex = 1;
+const int pharmaTabIndex = 2;
 const String initialTabTitle = newsTabTitle;
 
 

@@ -14,11 +14,11 @@ class PharmaSectionControl extends StatefulWidget {
 }
 
 class _PharmaSectionControlState extends State<PharmaSectionControl>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   
   List<Widget> _createPages(ArticlePayloadModel payload) {
     return payload.articles.map( (v) {
-      return ArticleView(vm: v);
+      return ArticleView(key: PageStorageKey("pharma: article: ${v.key}"), vm: v);
     }).toList();
   }
 
@@ -51,6 +51,7 @@ class _PharmaSectionControlState extends State<PharmaSectionControl>
         var pages = _createPages(snapshot.data);
         var controller = _createController(snapshot.data);
         return ViewSection(
+          key: Key("pharma: ${snapshot.data.index}"),
           pages: pages,
           controller: controller,
         );
