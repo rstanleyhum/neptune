@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:rxdart/rxdart.dart';
 
+import '../constants.dart' as globals;
+
 import '../models/article.dart';
 import '../models/article_store.dart';
 import '../services/local_service.dart';
@@ -27,7 +29,7 @@ class ArticleBloc {
     _articleStore.setLoading();
     _isLoadingSubject.add(_articleStore.isLoading);
     var articles = await LocalService.loadArticles();
-    await Future.delayed(Duration(seconds: 5));
+    await Future.delayed(Duration(seconds: globals.loadArticlesDelay));
     Map<String, Article> allArticles = {};
     articles.forEach((a) {
       allArticles[a.key] = a;

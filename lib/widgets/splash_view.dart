@@ -22,7 +22,7 @@ class _SplashViewState extends State<SplashView> {
   }
 
   startTime() async {
-    var _duration = Duration(seconds: 3);
+    var _duration = Duration(seconds: globals.splashPageDelay);
     return Timer(_duration, navigationPage);
   }
 

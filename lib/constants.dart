@@ -29,3 +29,6 @@ const IconData pharmaIcon = Icons.local_pharmacy;
 const String splashPageTitle = "Splash Page";
 const String disclaimerTitle = "Disclaimer";
 const String disclaimerButtonText = "I accept";
+
+const int loadArticlesDelay = 5; // for debugging
+const int splashPageDelay = 3;
