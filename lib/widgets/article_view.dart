@@ -2,14 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:path_provider/path_provider.dart';
-
 
 import '../viewmodels/article_payload.dart';
-
-import 'article_link_item.dart';
-import 'article_title.dart';
-import 'article_markdown.dart';
 
 class ArticleView extends StatelessWidget {
   final ArticleModel vm;
@@ -21,27 +15,39 @@ class ArticleView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Directory baseDir = Directory("/data/user/0/com.example.neptune/app_flutter/");
+    Directory baseDir =
+        Directory("/data/user/0/com.example.neptune/app_flutter/");
 
     return CustomScrollView(
       slivers: <Widget>[
+        // AppBar with Title
         SliverAppBar(
-          leading: null,
           title: Text(vm.title),
           floating: true,
           pinned: false,
-          expandedHeight: 50.0,
+          primary: true,
         ),
+
+        // MarkdownBody and ByLine
         SliverList(
           delegate: SliverChildListDelegate(
             [
               Container(
-                padding: EdgeInsets.all(5.0),
-                child: MarkdownBody(data: vm.mdcontent, imageDirectory: baseDir,),
+                padding: EdgeInsets.only(left: 15.0, right: 10.0, top: 5.0, bottom: 10.0),
+                child: Text("by: ${vm.byline} (updated: ${vm.date})", style: TextStyle(color: Colors.grey)),
+              ),
+              Container(
+                padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 5.0),
+                child: MarkdownBody(
+                  data: vm.mdcontent,
+                  imageDirectory: baseDir,
+                ),
               ),
             ],
           ),
         ),
+
+        // Related List Links
         SliverFixedExtentList(
           itemExtent: 20.0,
           delegate: SliverChildListDelegate(
@@ -52,9 +58,9 @@ class ArticleView extends StatelessWidget {
                       print(v.key);
                     },
                     child: Container(
-                      padding: EdgeInsets.all(5.0),
+                      padding: EdgeInsets.only(left: 10.0, right: 10.0, top: 0.0, bottom: 0.0),
                       child:
-                          Text(v.title, style: TextStyle(color: Colors.blue)),
+                          Text(v.title, style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline)),
                     ),
                   );
                 }),
@@ -62,23 +68,6 @@ class ArticleView extends StatelessWidget {
           ),
         ),
       ],
-      // SliverList(
-      //   delegate: SliverChildBuilderDelegate(
-      //     (context, index) => Card(
-      //       child: Container(
-      //         padding: EdgeInsets.all(10.0),
-      //         child: new Row()),)
-
-      //   ),)
-      // ..add(ArticleTitle(
-      //   title: vm.title,
-      //   byline: vm.byline,
-      //   date: vm.date,
-      // ))
-      // ..add(ArticleMarkdown(mdcontent: vm.mdcontent))
-      // ..addAll(vm.related.map((v) {
-      //   return ArticleLinkItem(url: v.key, titleTxt: v.title);
-      // })),
     );
   }
 }

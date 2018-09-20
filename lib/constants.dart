@@ -39,3 +39,5 @@ const int splashPageDelay = 3;
 const String initialNewsArticle = "specialty_by_topic_section.md";
 const String initialHandbookArticle = "neonatal_gbs_mom.md";
 const String initialPharmaArticle = "nicu_section.md";
+
+const double defaultHeightOfAndroidStatusBar = 24.0;
