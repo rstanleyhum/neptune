@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 import '../models/article.dart';
 
 import 'article_payload.dart';
@@ -33,6 +35,9 @@ class ArticleStore {
     _loading = false;
   }
 
+  static String dateFormatter(DateTime date) {
+    return DateFormat('yyyy-MM-dd').format(date);
+  }
   void setAllArticles(Map<String, Article> articles) {
     this._allArticles = articles;
   }
@@ -105,7 +110,7 @@ class ArticleStore {
       return ArticleModel(
         key: v.key,
         title: v.title,
-        date: "${v.date}",
+        date: dateFormatter(v.date),
         byline: v.byline,
         mdcontent: v.mdcontent,
         related: _getArticleLinks(_getRelatedArticles(v)),
