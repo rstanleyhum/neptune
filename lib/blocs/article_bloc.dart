@@ -11,6 +11,9 @@ import '../services/local_service.dart';
 
 class ArticleBloc {
   final _articleStore = ArticleStore();
+
+  final _setArticleEventController = StreamController<String>();
+
   final _isLoadingSubject = BehaviorSubject<bool>();
   final _isLoadedSubject = BehaviorSubject<bool>();
 
@@ -18,12 +21,13 @@ class ArticleBloc {
   final _handbookPayloadSubject = BehaviorSubject<ArticlePayloadModel>();
   final _pharmaPayloadSubject = BehaviorSubject<ArticlePayloadModel>();
 
-
   ArticleBloc() {
     loadArticles();
+    _setArticleEventController.stream.listen(_handleSelectArticleEvent);
   }
 
   void dispose() {
+    _setArticleEventController.close();
     _isLoadingSubject.close();
     _isLoadedSubject.close();
     _newsPayloadSubject.close();
@@ -31,13 +35,15 @@ class ArticleBloc {
     _pharmaPayloadSubject.close();
   }
 
+  Sink<String> get sendArticleSelect => _setArticleEventController.sink;
+
   Stream<bool> get isLoading => _isLoadingSubject.stream;
   Stream<bool> get isLoaded => _isLoadedSubject.stream;
 
   Stream<ArticlePayloadModel> get newsPayload => _newsPayloadSubject.stream;
-  Stream<ArticlePayloadModel> get handbookPayload => _handbookPayloadSubject.stream;
+  Stream<ArticlePayloadModel> get handbookPayload =>
+      _handbookPayloadSubject.stream;
   Stream<ArticlePayloadModel> get pharmaPayload => _pharmaPayloadSubject.stream;
-
 
   void loadArticles() async {
     _articleStore.setLoading();
@@ -59,5 +65,11 @@ class ArticleBloc {
     _pharmaPayloadSubject.add(_articleStore.getPharmaPayload());
     _isLoadedSubject.add(_articleStore.isLoaded);
     _isLoadingSubject.add(_articleStore.isLoading);
+  }
+
+  void _handleSelectArticleEvent(String event) {
+    print(event);
+    _articleStore.setNewsArticle(event);
+    _newsPayloadSubject.add(_articleStore.getNewsPayload());
   }
 }

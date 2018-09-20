@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 
+import '../providers/article_provider.dart';
 import '../viewmodels/article_payload.dart';
 
 class ArticleView extends StatelessWidget {
@@ -17,6 +18,7 @@ class ArticleView extends StatelessWidget {
   Widget build(BuildContext context) {
     Directory baseDir =
         Directory("/data/user/0/com.example.neptune/app_flutter/");
+    final articleBloc = ArticleProvider.of(context);
 
     return CustomScrollView(
       slivers: <Widget>[
@@ -55,7 +57,7 @@ class ArticleView extends StatelessWidget {
                 vm.related.map((v) {
                   return GestureDetector(
                     onTap: () {
-                      print(v.key);
+                      articleBloc.sendArticleSelect.add(v.key);
                     },
                     child: Container(
                       padding: EdgeInsets.only(left: 10.0, right: 10.0, top: 0.0, bottom: 0.0),

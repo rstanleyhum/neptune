@@ -21,6 +21,7 @@ class UIBloc {
   }
 
   Sink<int> get setTabIndex => _setTabIndexController.sink;
+  
   Stream<int> get tabIndex => _tabIndexSubject.stream;
   Stream<String> get tabName => _tabNameSubject.stream;
 
