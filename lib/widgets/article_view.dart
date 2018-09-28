@@ -58,7 +58,6 @@ class ArticleView extends StatelessWidget {
                   return GestureDetector(
                     onTap: () {
                       appBloc.sendArticleSelect.add(v.key);
-                      appBloc.setTabIndexByEvent.add(v.key);
                     },
                     child: Container(
                       padding: EdgeInsets.only(left: 10.0, right: 10.0, top: 0.0, bottom: 0.0),
