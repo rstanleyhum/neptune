@@ -67,9 +67,27 @@ class ArticleBloc {
     _isLoadingSubject.add(_articleStore.isLoading);
   }
 
+  
   void _handleSelectArticleEvent(String event) {
-    print(event);
-    _articleStore.setNewsArticle(event);
-    _newsPayloadSubject.add(_articleStore.getNewsPayload());
+    var parts = event.split(":");
+    var section = parts[0];
+    var articleKey = parts[1];
+    print(section);
+    print(articleKey);
+    if (section == "news") {
+      _articleStore.setNewsArticle(event);
+      _newsPayloadSubject.add(_articleStore.getNewsPayload());
+    } else if (section == "handbook") {
+      _articleStore.setHandbookArticle(event);
+      _handbookPayloadSubject.add(_articleStore.getHandbookPayload());
+    } else if (section == "pharma") {
+      _articleStore.setPharmaArticle(event);
+      _pharmaPayloadSubject.add(_articleStore.getPharmaPayload());
+    } else {
+      print("Section selection error");
+      print(event);
+      print(section);
+      print(articleKey);
+    }
   }
 }

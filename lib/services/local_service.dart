@@ -26,7 +26,8 @@ class LocalService {
       var json = jsonDecode(s);
       var filenames = (json[_jsonIndex] as List).cast<String>().toList();
       var articlesContent = await Future.wait(filenames.map((n) {
-        return _loadAsset("$_baseDir/$n");
+        var filename = n.split(":")[1];
+        return _loadAsset("$_baseDir/$filename");
       }));
 
       for (var i = 0; i < filenames.length; i++) {
