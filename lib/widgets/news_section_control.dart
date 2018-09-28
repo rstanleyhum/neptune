@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import '../providers/article_provider.dart';
+import '../providers/app_provider.dart';
 import '../viewmodels/article_payload.dart';
 
 import 'view_section.dart';
@@ -61,7 +61,7 @@ class _NewsSectionControlState extends State<NewsSectionControl>
 
   @override
   Widget build(BuildContext context) {
-    final articleBloc = ArticleProvider.of(context);
-    return createStreamBuilderWidget(articleBloc.newsPayload);
+    final appBloc = AppProvider.of(context);
+    return createStreamBuilderWidget(appBloc.newsPayload);
   }
 }

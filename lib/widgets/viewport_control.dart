@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../constants.dart' as globals;
 
-import '../providers/ui_provider.dart';
+import '../providers/app_provider.dart';
 
 import 'news_section_control.dart';
 import 'handbook_section_control.dart';
@@ -11,9 +11,9 @@ import 'pharma_section_control.dart';
 class ViewportControl extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final uiBloc = UIProvider.of(context);
+    final appBloc = AppProvider.of(context);
     return StreamBuilder<int>(
-      stream: uiBloc.tabIndex,
+      stream: appBloc.tabIndex,
       initialData: globals.initialTabIndex,
       builder: (context, snapshot) {
         return Stack(
