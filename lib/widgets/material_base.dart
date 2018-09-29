@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../constants.dart' as globals;
+import '../route_names.dart' as routeNames;
 
 import 'base_view.dart';
+import 'splash_view.dart';
+import 'disclaimer_view.dart';
 
 class MaterialBase extends StatelessWidget {
   @override
@@ -11,6 +14,10 @@ class MaterialBase extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: globals.themeColor,
         ),
-        home: BaseView(),
+        home: SplashView(),
+        routes: <String, WidgetBuilder>{
+          routeNames.DisclaimerViewRoute: (context) => DisclaimerView(),
+          routeNames.BaseViewRoute: (context) => BaseView(),
+        },
       );
 }

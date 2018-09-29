@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../constants.dart' as globals;
+import '../providers/app_provider.dart';
 
 import 'news_tab.dart';
 import 'handbook_tab.dart';
@@ -12,29 +13,26 @@ class BottomBar extends StatefulWidget {
 }
 
 class _BottomBarState extends State<BottomBar> {
-  int _index;
-
   @override
-  void initState() {
-    super.initState();
-    _index = globals.initialTabIndex;
+  Widget build(BuildContext context) {
+    final appBloc = AppProvider.of(context);
+    return StreamBuilder<int>(
+      stream: appBloc.tabIndex,
+      initialData: globals.initialTabIndex,
+      builder: (context, snapshot) {
+        return BottomNavigationBar(
+          items: <BottomNavigationBarItem>[
+            NewsTab(),
+            HandbookTab(),
+            PharmaTab(),
+          ],
+          type: BottomNavigationBarType.fixed,
+          currentIndex: snapshot.data,
+          onTap: (index) {
+            appBloc.setTabIndex.add(index);
+          },
+        );
+      },
+    );
   }
-
-  void _selectIndex(int index) {
-    setState(() {
-      _index = index;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) => BottomNavigationBar(
-        items: <BottomNavigationBarItem>[
-          NewsTab(),
-          HandbookTab(),
-          PharmaTab(),
-        ],
-        type: BottomNavigationBarType.fixed,
-        currentIndex: _index,
-        onTap: _selectIndex,
-      );
 }

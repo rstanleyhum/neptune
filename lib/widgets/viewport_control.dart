@@ -1,38 +1,53 @@
 import 'package:flutter/material.dart';
 
-import 'view_section.dart';
-import 'test_page.dart';
+import '../constants.dart' as globals;
 
-class ViewportControl extends StatefulWidget {
-  @override
-  _ViewportControlState createState() => _ViewportControlState();
-}
+import '../providers/app_provider.dart';
 
-class _ViewportControlState extends State<ViewportControl>
-    with SingleTickerProviderStateMixin {
-  TabController _controller;
+import 'news_section_control.dart';
+import 'handbook_section_control.dart';
+import 'pharma_section_control.dart';
 
-  List<Widget> _createPages() {
-    return []
-      ..add(TestPage(number: 1))
-      ..add(TestPage(number: 2))
-      ..add(TestPage(number: 3));
-  }
-  @override
-  void initState() {
-    super.initState();
-    _controller = TabController(
-      vsync: this,
-      length: 3,
-      initialIndex: 0,
-    );
-  }
-
+class ViewportControl extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ViewSection(
-      pages: _createPages(),
-      controller: _controller,
+    final appBloc = AppProvider.of(context);
+    return StreamBuilder<int>(
+      stream: appBloc.tabIndex,
+      initialData: globals.initialTabIndex,
+      builder: (context, snapshot) {
+        return Stack(
+          //
+          // Note Offstage starts/stops painting; TickerMode starts/stops animation
+          // Keeps everything in the tree so that it doesn't automatically rebuild each
+          //  widget
+          // See: https://stackoverflow.com/questions/45235570/how-to-use-bottomnavigationbar-with-navigator/45992604#45992604
+          //
+          children: <Widget>[
+            Offstage(
+              offstage: snapshot.data != globals.newsTabIndex,
+              child: TickerMode(
+                enabled: snapshot.data == globals.newsTabIndex,
+                child: NewsSectionControl(),
+              ),
+            ),
+            Offstage(
+              offstage: snapshot.data != globals.handbookTabIndex,
+              child: TickerMode(
+                enabled: snapshot.data == globals.handbookTabIndex,
+                child: HandbookSectionControl(),
+              ),
+            ),
+            Offstage(
+              offstage: snapshot.data != globals.pharmaTabIndex,
+              child: TickerMode(
+                enabled: snapshot.data == globals.pharmaTabIndex,
+                child: PharmaSectionControl(),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }
