@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:rxdart/rxdart.dart';
 
+import 'package:firebase_analytics/firebase_analytics.dart';
+
 import '../constants.dart' as globals;
 
 import '../models/article.dart';
@@ -14,6 +16,8 @@ import '../viewmodels/drawer_vm.dart';
 import '../services/local_service.dart';
 
 class AppBloc {
+  static FirebaseAnalytics analytics = new FirebaseAnalytics();
+
   final _uiState = UIState();
   final _articleStore = ArticleStore();
 
@@ -32,14 +36,12 @@ class AppBloc {
   final _pharmaPayloadSubject = BehaviorSubject<ArticlePayloadModel>();
   final _drawerVMSubject = BehaviorSubject<DrawerVM>();
 
-
   AppBloc() {
     _setTabIndexController.stream.listen(_handleSetTabIndex);
 
     loadArticles();
     _setArticleEventController.stream.listen(_handleSelectArticleEvent);
   }
-
 
   void dispose() {
     _setTabIndexController.close();
@@ -75,8 +77,13 @@ class AppBloc {
     _tabIndexSubject.add(_uiState.tabIndex);
     _tabNameSubject.add(_uiState.tabName);
     _drawerVMSubject.add(_articleStore.getDrawerVM(_uiState.tabIndex));
+    analytics.logEvent(
+      name: 'handleSetTabIndex',
+      parameters: <String, dynamic>{
+        'index': index,
+      },
+    );
   }
-
 
   void loadArticles() async {
     _articleStore.setLoading();
@@ -93,6 +100,12 @@ class AppBloc {
     _articleStore.setHandbookArticle(globals.initialHandbookArticle);
     _articleStore.setPharmaArticle(globals.initialPharmaArticle);
     _articleStore.setLoaded();
+    analytics.logEvent(
+      name: 'Loaded_articles_event',
+      parameters: <String, dynamic>{
+        'bool': true,
+      },
+    );
     _newsPayloadSubject.add(_articleStore.getNewsPayload());
     _handbookPayloadSubject.add(_articleStore.getHandbookPayload());
     _pharmaPayloadSubject.add(_articleStore.getPharmaPayload());
@@ -103,7 +116,6 @@ class AppBloc {
     _tabIndexSubject.add(_uiState.tabIndex);
     _tabNameSubject.add(_uiState.tabName);
   }
-
 
   void _handleSelectArticleEvent(String event) {
     var section = event.split(":")[0];
@@ -120,12 +132,25 @@ class AppBloc {
       _pharmaPayloadSubject.add(_articleStore.getPharmaPayload());
       _uiState.setTabIndex(2);
     } else {
-      print("Section selection error");
-      print(event);
+      analytics.logEvent(
+        name: 'handleSelectArticelEvent_ERROR',
+        parameters: <String, dynamic>{
+          'event': event,
+        },
+      );
+      return;
     }
+
     _tabIndexSubject.add(_uiState.tabIndex);
     _tabNameSubject.add(_uiState.tabName);
 
     _drawerVMSubject.add(_articleStore.getDrawerVM(_uiState.tabIndex));
+
+    analytics.logEvent(
+      name: 'handleSelectArticleEvent_SUCCESS',
+      parameters: <String, dynamic>{
+        'event': event,
+      },
+    );
   }
 }
