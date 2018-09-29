@@ -3,6 +3,8 @@ import 'package:intl/intl.dart';
 import '../models/article.dart';
 
 import 'article_payload.dart';
+import 'drawer_vm.dart';
+
 
 class ArticleStore {
   Map<String, Article> _allArticles;
@@ -139,5 +141,38 @@ class ArticleStore {
   ArticlePayloadModel getPharmaPayload() {
     var pharmaArticle = _getArticleByKey(_pharmaArticle);
     return _getArticlePayloadModel(pharmaArticle);
+  }
+
+  DrawerVM _getDrawerVM(Article a) {
+    var siblings = _getSiblings(a);
+    var parent = _getParentArticle(a);
+    var parentLink = ArticleLinkModel(
+      key: parent.key,
+      title: parent.title,
+      intro: parent.intro,
+    );
+    var parentArticle = parent.parent.split(":")[1];
+    if (parentArticle == "index.md") {
+      parentLink = null;
+    }
+    return DrawerVM(
+      articleLinks: _getArticleLinks(siblings),
+      parentLink: parentLink,
+    );
+  }
+  DrawerVM getDrawerVM(int tabIndex) {
+    var current = _getArticleByKey(_newsArticle);
+
+    if (tabIndex == 0) {
+      // article already done 
+    } else if (tabIndex == 1) {
+      current = _getArticleByKey(_handbookArticle);
+    } else if (tabIndex == 2) {
+      current = _getArticleByKey(_pharmaArticle);
+    } else {
+      print ("error");
+    }
+
+    return _getDrawerVM(current);
   }
 }

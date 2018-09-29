@@ -9,6 +9,7 @@ import '../models/article.dart';
 import '../viewmodels/article_store.dart';
 import '../viewmodels/article_payload.dart';
 import '../viewmodels/ui_state.dart';
+import '../viewmodels/drawer_vm.dart';
 
 import '../services/local_service.dart';
 
@@ -29,6 +30,7 @@ class AppBloc {
   final _newsPayloadSubject = BehaviorSubject<ArticlePayloadModel>();
   final _handbookPayloadSubject = BehaviorSubject<ArticlePayloadModel>();
   final _pharmaPayloadSubject = BehaviorSubject<ArticlePayloadModel>();
+  final _drawerVMSubject = BehaviorSubject<DrawerVM>();
 
 
   AppBloc() {
@@ -66,11 +68,13 @@ class AppBloc {
       _handbookPayloadSubject.stream;
   Stream<ArticlePayloadModel> get pharmaPayload => _pharmaPayloadSubject.stream;
 
+  Stream<DrawerVM> get drawerVMPayload => _drawerVMSubject.stream;
 
   void _handleSetTabIndex(int index) {
     _uiState.setTabIndex(index);
     _tabIndexSubject.add(_uiState.tabIndex);
     _tabNameSubject.add(_uiState.tabName);
+    _drawerVMSubject.add(_articleStore.getDrawerVM(_uiState.tabIndex));
   }
 
 
@@ -94,6 +98,10 @@ class AppBloc {
     _pharmaPayloadSubject.add(_articleStore.getPharmaPayload());
     _isLoadedSubject.add(_articleStore.isLoaded);
     _isLoadingSubject.add(_articleStore.isLoading);
+    _uiState.setTabIndex(0);
+    _drawerVMSubject.add(_articleStore.getDrawerVM(_uiState.tabIndex));
+    _tabIndexSubject.add(_uiState.tabIndex);
+    _tabNameSubject.add(_uiState.tabName);
   }
 
 
@@ -117,5 +125,7 @@ class AppBloc {
     }
     _tabIndexSubject.add(_uiState.tabIndex);
     _tabNameSubject.add(_uiState.tabName);
+
+    _drawerVMSubject.add(_articleStore.getDrawerVM(_uiState.tabIndex));
   }
 }

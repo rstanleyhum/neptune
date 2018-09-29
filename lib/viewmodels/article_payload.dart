@@ -1,4 +1,3 @@
-
 class ArticleLinkModel {
   String key;
   String title;
@@ -9,6 +8,11 @@ class ArticleLinkModel {
     this.title,
     this.intro,
   });
+
+  @override
+  String toString() {
+    return "ArticleLinkModel: {key: $key, title: $title}";
+  }
 }
 
 class ArticleModel {

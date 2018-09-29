@@ -35,8 +35,10 @@ class ArticleView extends StatelessWidget {
           delegate: SliverChildListDelegate(
             [
               Container(
-                padding: EdgeInsets.only(left: 15.0, right: 10.0, top: 5.0, bottom: 10.0),
-                child: Text("by: ${vm.byline} (updated: ${vm.date})", style: TextStyle(color: Colors.grey)),
+                padding: EdgeInsets.only(
+                    left: 15.0, right: 10.0, top: 5.0, bottom: 10.0),
+                child: Text("by: ${vm.byline} (updated: ${vm.date})",
+                    style: TextStyle(color: Colors.grey)),
               ),
               Container(
                 padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 5.0),
@@ -60,13 +62,26 @@ class ArticleView extends StatelessWidget {
                       appBloc.sendArticleSelect.add(v.key);
                     },
                     child: Container(
-                      padding: EdgeInsets.only(left: 10.0, right: 10.0, top: 0.0, bottom: 0.0),
-                      child:
-                          Text(v.title, style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline)),
+                      padding: EdgeInsets.only(
+                          left: 10.0, right: 10.0, top: 0.0, bottom: 0.0),
+                      child: Text(v.title,
+                          style: TextStyle(
+                              color: Colors.blue,
+                              decoration: TextDecoration.underline)),
                     ),
                   );
                 }),
               ),
+          ),
+        ),
+
+        SliverList(
+          delegate: SliverChildListDelegate(
+            [
+              Container(
+                height: 30.0,
+              ),
+            ],
           ),
         ),
       ],
