@@ -1,4 +1,4 @@
-package com.example.neptune;
+package com.stanleyhum.neptune;
 
 import android.os.Bundle;
 import io.flutter.app.FlutterActivity;
