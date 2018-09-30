@@ -40,6 +40,13 @@ class ArticleStore {
   static String dateFormatter(DateTime date) {
     return DateFormat('yyyy-MM-dd').format(date);
   }
+
+  void addAllArticles(Map<String, Article> articles) {
+    articles.forEach( (k,v) {
+      this._allArticles[k] = v;
+    });
+  }
+
   void setAllArticles(Map<String, Article> articles) {
     this._allArticles = articles;
   }
@@ -151,7 +158,7 @@ class ArticleStore {
       title: parent.title,
       intro: parent.intro,
     );
-    var parentArticle = parent.parent.split(":")[1];
+    var parentArticle = parent.parent.split("!")[1];
     if (parentArticle == "index.md") {
       parentLink = null;
     }
