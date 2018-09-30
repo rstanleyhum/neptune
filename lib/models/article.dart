@@ -15,6 +15,16 @@ class Article {
   Article({this.key, this.title, this.date, this.intro, this.byline,
       this.mdcontent, this.parent, this.children, this.related});
 
+  Article.unknown({
+    this.key,
+    this.title = "Unknown",
+    this.byline = "Unknown",
+    this.intro = "Unknown",
+    this.mdcontent = "# Unknown",
+    this.children = const [],
+    this.related = const [], 
+  });
+
   Article.fromContents(String key, String contents) {
     this.key = key;
     var parts = contents.split('---');

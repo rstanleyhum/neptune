@@ -36,22 +36,17 @@ class _HandbookSectionControlState extends State<HandbookSectionControl>
       initialData: null,
       builder: (context, snapshot) {
         if (snapshot == null || !snapshot.hasData) {
-          return ViewSection(
-            pages: <Widget>[
-              Container(),
-            ],
-            controller: TabController(
-              length: 1,
-              vsync: this,
-              initialIndex: 0,
-            ),
-          );
+          return Container();
         }
+        var payload = snapshot.data;
 
-        var pages = _createPages(snapshot.data);
-        var controller = _createController(snapshot.data);
+        var pages = _createPages(payload);
+        var controller = _createController(payload);
+        controller.animateTo(payload.index);
+        var keyString = payload.articles[payload.index].key;
+
         return ViewSection(
-          key: Key("handbook: ${snapshot.data.index}"),
+          key: Key("handbook: $keyString"),
           pages: pages,
           controller: controller,
         );
