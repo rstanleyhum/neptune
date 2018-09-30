@@ -6,50 +6,75 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:rxdart/rxdart.dart';
 
-import 'package:path_provider/path_provider.dart';
-
 import '../constants.dart' as globals;
 
 import '../models/article.dart';
 
 import '../viewmodels/article_store.dart';
 import '../viewmodels/article_payload.dart';
-import '../viewmodels/ui_state.dart';
+import '../viewmodels/app_state.dart';
 import '../viewmodels/drawer_vm.dart';
 
 class AppBloc {
-  final Firestore firestore;
-  final FirebaseStorage firebaseStorage;
-
   static FirebaseAnalytics analytics = new FirebaseAnalytics();
 
-  final _uiState = UIState();
+  final Firestore firestore;
+  final FirebaseStorage firebaseStorage;
+  final Directory baseAppDirectory;
+  final String imageDir;
+
+  final _appState = AppState();
   final _articleStore = ArticleStore();
 
   final _setTabIndexController = StreamController<int>();
-
   final _setArticleEventController = StreamController<String>();
+  final _notifyNewArticlesLoaded = StreamController<int>();
 
   final _tabIndexSubject = BehaviorSubject<int>();
-  final _tabNameSubject = BehaviorSubject<String>();
-
   final _isLoadingSubject = BehaviorSubject<bool>();
   final _isLoadedSubject = BehaviorSubject<bool>();
-
   final _newsPayloadSubject = BehaviorSubject<ArticlePayloadModel>();
   final _handbookPayloadSubject = BehaviorSubject<ArticlePayloadModel>();
   final _pharmaPayloadSubject = BehaviorSubject<ArticlePayloadModel>();
   final _drawerVMSubject = BehaviorSubject<DrawerVM>();
 
-  void _createImagesDirectory() async {
-    final directory = await getApplicationDocumentsDirectory();
-    var imagesDirPath = "${directory.path}/images/";
-    await Directory(imagesDirPath)
-        .create(recursive: true)
-        .then((Directory directory) {})
-        .catchError((e) {
-      print(e);
-    });
+  bool _selectingArticle;
+
+  Sink<int> get setTabIndex => _setTabIndexController.sink;
+  Sink<String> get sendArticleSelect => _setArticleEventController.sink;
+
+  Stream<int> get tabIndex => _tabIndexSubject.stream;
+  Stream<bool> get isLoading => _isLoadingSubject.stream;
+  Stream<bool> get isLoaded => _isLoadedSubject.stream;
+  Stream<ArticlePayloadModel> get newsPayload => _newsPayloadSubject.stream;
+  Stream<ArticlePayloadModel> get handbookPayload =>
+      _handbookPayloadSubject.stream;
+  Stream<ArticlePayloadModel> get pharmaPayload => _pharmaPayloadSubject.stream;
+  Stream<DrawerVM> get drawerVMPayload => _drawerVMSubject.stream;
+
+  AppBloc({
+    this.firestore,
+    this.firebaseStorage,
+    this.baseAppDirectory,
+    this.imageDir,
+  }) {
+    _selectingArticle = false;
+    _createImagesDirectory();
+    _setUpListeners();
+    _loadArticles();
+  }
+
+  void dispose() {
+    _setTabIndexController.close();
+    _tabIndexSubject.close();
+    _notifyNewArticlesLoaded.close();
+
+    _setArticleEventController.close();
+    _isLoadingSubject.close();
+    _isLoadedSubject.close();
+    _newsPayloadSubject.close();
+    _handbookPayloadSubject.close();
+    _pharmaPayloadSubject.close();
   }
 
   void _setUpListeners() {
@@ -74,53 +99,13 @@ class AppBloc {
 
     _setTabIndexController.stream.listen(_handleSetTabIndex);
     _setArticleEventController.stream.listen(_handleSelectArticleEvent);
+    _notifyNewArticlesLoaded.stream.listen(_handleNewArticlesLoaded);
   }
 
-  AppBloc({
-    this.firestore,
-    this.firebaseStorage,
-  }) {
-    _createImagesDirectory();
-
-    _setUpListeners();
-
-    loadArticles();
-  }
-
-  void dispose() {
-    _setTabIndexController.close();
-    _tabIndexSubject.close();
-    _tabNameSubject.close();
-    _setArticleEventController.close();
-    _isLoadingSubject.close();
-    _isLoadedSubject.close();
-    _newsPayloadSubject.close();
-    _handbookPayloadSubject.close();
-    _pharmaPayloadSubject.close();
-  }
-
-  Sink<int> get setTabIndex => _setTabIndexController.sink;
-
-  Sink<String> get sendArticleSelect => _setArticleEventController.sink;
-
-  Stream<int> get tabIndex => _tabIndexSubject.stream;
-  Stream<String> get tabName => _tabNameSubject.stream;
-
-  Stream<bool> get isLoading => _isLoadingSubject.stream;
-  Stream<bool> get isLoaded => _isLoadedSubject.stream;
-
-  Stream<ArticlePayloadModel> get newsPayload => _newsPayloadSubject.stream;
-  Stream<ArticlePayloadModel> get handbookPayload =>
-      _handbookPayloadSubject.stream;
-  Stream<ArticlePayloadModel> get pharmaPayload => _pharmaPayloadSubject.stream;
-
-  Stream<DrawerVM> get drawerVMPayload => _drawerVMSubject.stream;
-
-  void _handleSetTabIndex(int index) {
-    _uiState.setTabIndex(index);
-    _tabIndexSubject.add(_uiState.tabIndex);
-    _tabNameSubject.add(_uiState.tabName);
-    _drawerVMSubject.add(_articleStore.getDrawerVM(_uiState.tabIndex));
+  void _handleSetTabIndex(int index) async {
+    _appState.setTabIndex(index);
+    _tabIndexSubject.add(_appState.tabIndex);
+    _drawerVMSubject.add(await _articleStore.getDrawerVM(_appState.tabIndex));
     analytics.logEvent(
       name: 'handleSetTabIndex',
       parameters: <String, dynamic>{
@@ -129,46 +114,40 @@ class AppBloc {
     );
   }
 
-  void loadArticles() async {
-    _articleStore.setLoading();
-    _isLoadingSubject.add(_articleStore.isLoading);
-    //await LocalService.loadImages();
-    await Future.delayed(Duration(seconds: globals.loadArticlesDelay + 10));
-    _articleStore.setNewsArticle(globals.initialNewsArticle);
-    _articleStore.setHandbookArticle(globals.initialHandbookArticle);
-    _articleStore.setPharmaArticle(globals.initialPharmaArticle);
-    _articleStore.setLoaded();
+  void _loadArticles() async {
+    await _articleStore.setNewsArticle(globals.initialNewsArticle);
+    await _articleStore.setHandbookArticle(globals.initialHandbookArticle);
+    await _articleStore.setPharmaArticle(globals.initialPharmaArticle);
     analytics.logEvent(
       name: 'Loaded_articles_event',
       parameters: <String, dynamic>{
         'bool': true,
       },
     );
-    _newsPayloadSubject.add(_articleStore.getNewsPayload());
-    _handbookPayloadSubject.add(_articleStore.getHandbookPayload());
-    _pharmaPayloadSubject.add(_articleStore.getPharmaPayload());
-    _isLoadedSubject.add(_articleStore.isLoaded);
-    _isLoadingSubject.add(_articleStore.isLoading);
-    _uiState.setTabIndex(0);
-    _drawerVMSubject.add(_articleStore.getDrawerVM(_uiState.tabIndex));
-    _tabIndexSubject.add(_uiState.tabIndex);
-    _tabNameSubject.add(_uiState.tabName);
   }
 
-  void _handleSelectArticleEvent(String event) {
+  void _handleSelectArticleEvent(String event) async {
+    if (_selectingArticle) {
+      return;
+    }
+
+    _selectingArticle = true;
+
     var section = event.split("!")[0];
     if (section == "news") {
-      _articleStore.setNewsArticle(event);
-      _newsPayloadSubject.add(_articleStore.getNewsPayload());
-      _uiState.setTabIndex(0);
+      await _articleStore.setNewsArticle(event);
+      var newsPayload = await _articleStore.getNewsPayload();
+      _newsPayloadSubject.add(newsPayload);
+      _appState.setTabIndex(0);
     } else if (section == "handbook") {
-      _articleStore.setHandbookArticle(event);
-      _handbookPayloadSubject.add(_articleStore.getHandbookPayload());
-      _uiState.setTabIndex(1);
+      await _articleStore.setHandbookArticle(event);
+      var handbookPayload = await _articleStore.getHandbookPayload();
+      _handbookPayloadSubject.add(handbookPayload);
+      _appState.setTabIndex(1);
     } else if (section == "pharma") {
       _articleStore.setPharmaArticle(event);
-      _pharmaPayloadSubject.add(_articleStore.getPharmaPayload());
-      _uiState.setTabIndex(2);
+      _pharmaPayloadSubject.add(await _articleStore.getPharmaPayload());
+      _appState.setTabIndex(2);
     } else {
       analytics.logEvent(
         name: 'handleSelectArticelEvent_ERROR',
@@ -176,18 +155,20 @@ class AppBloc {
           'event': event,
         },
       );
+      _selectingArticle = false;
       return;
     }
-    _tabIndexSubject.add(_uiState.tabIndex);
-    _tabNameSubject.add(_uiState.tabName);
 
-    _drawerVMSubject.add(_articleStore.getDrawerVM(_uiState.tabIndex));
+    _tabIndexSubject.add(_appState.tabIndex);
+
+    _drawerVMSubject.add(await _articleStore.getDrawerVM(_appState.tabIndex));
     analytics.logEvent(
       name: 'handleSelectArticleEvent_SUCCESS',
       parameters: <String, dynamic>{
         'event': event,
       },
     );
+    _selectingArticle = false;
   }
 
   Article _createArticleFromQueryDoc(DocumentSnapshot d) {
@@ -239,34 +220,43 @@ class AppBloc {
     );
   }
 
-  void _handleFirestoreHandbookCollection(QuerySnapshot event) {
+  void _handleFirestoreHandbookCollection(QuerySnapshot event) async {
+    _appState.setHandbookArticlesLoading(true);
     Map<String, Article> allArticles = {};
     event.documents.forEach((d) {
       Article a = _createArticleFromQueryDoc(d);
       allArticles[a.key] = a;
     });
-    _articleStore.addAllArticles(allArticles);
+    await _articleStore.addAllArticles(allArticles);
+    _appState.setHandbookArticlesLoading(false);
+    _notifyNewArticlesLoaded.add(1);
   }
 
-  void _handleFirestoreNewsCollection(QuerySnapshot event) {
+  void _handleFirestoreNewsCollection(QuerySnapshot event) async {
+    _appState.setNewsArticlesLoading(true);
     Map<String, Article> allArticles = {};
     event.documents.forEach((d) {
       Article a = _createArticleFromQueryDoc(d);
       allArticles[a.key] = a;
     });
-    _articleStore.addAllArticles(allArticles);
+    await _articleStore.addAllArticles(allArticles);
+    _appState.setNewsArticlesLoading(false);
+    _notifyNewArticlesLoaded.add(0);
   }
 
-  void _handleFirestorePharmaCollection(QuerySnapshot event) {
+  void _handleFirestorePharmaCollection(QuerySnapshot event) async {
+    _appState.setPharmaArticlesLoading(true);
     Map<String, Article> allArticles = {};
     event.documents.forEach((d) {
       Article a = _createArticleFromQueryDoc(d);
       allArticles[a.key] = a;
     });
-    _articleStore.addAllArticles(allArticles);
+    await _articleStore.addAllArticles(allArticles);
+    _appState.setPharmaArticlesLoading(false);
+    _notifyNewArticlesLoaded.add(2);
   }
 
-  void _handleFirestoreChonyImagesCollection(QuerySnapshot event) async {
+  void _handleFirestoreChonyImagesCollection(QuerySnapshot event) {
     event.documents.forEach((d) {
       //var key = d.data['key'];
       var objectName = d.data['objectName'];
@@ -277,10 +267,7 @@ class AppBloc {
   }
 
   Future<void> _loadAndSaveImage(String fn, String b) async {
-    final directory = await getApplicationDocumentsDirectory();
-    var imagesDirPath = "${directory.path}/images/";
-    var filename = "$imagesDirPath${fn.toLowerCase()}";
-
+    var filename = "$imageDir${fn.toLowerCase()}";
 
     if (await File(filename).exists()) {
       return;
@@ -294,6 +281,24 @@ class AppBloc {
           .writeToFile(File(filename));
     } catch (e) {
       print(e);
+    }
+  }
+
+  void _createImagesDirectory() async {
+    await Directory(imageDir)
+        .create(recursive: true)
+        .then((Directory directory) {})
+        .catchError((e) {
+      print(e);
+    });
+  }
+
+  void _handleNewArticlesLoaded(int event) async {
+    if (_appState.articlesLoaded) {
+      _newsPayloadSubject.add(await _articleStore.getNewsPayload());
+      _handbookPayloadSubject.add(await _articleStore.getHandbookPayload());
+      _pharmaPayloadSubject.add(await _articleStore.getPharmaPayload());
+      _drawerVMSubject.add(await _articleStore.getDrawerVM(_appState.tabIndex));
     }
   }
 }

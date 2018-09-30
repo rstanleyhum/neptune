@@ -23,6 +23,7 @@ class _NewsSectionControlState extends State<NewsSectionControl>
   }
 
   TabController _createController(ArticlePayloadModel payload) {
+
     return TabController(
       length: payload.articles.length,
       vsync: this,
@@ -36,22 +37,17 @@ class _NewsSectionControlState extends State<NewsSectionControl>
       initialData: null,
       builder: (context, snapshot) {
         if (snapshot == null || !snapshot.hasData) {
-          return ViewSection(
-            pages: <Widget>[
-              Container(),
-            ],
-            controller: TabController(
-              length: 1,
-              vsync: this,
-              initialIndex: 0,
-            ),
-          );
+          return Container();
         }
+        var payload = snapshot.data;
 
-        var pages = _createPages(snapshot.data);
-        var controller = _createController(snapshot.data);
+        var pages = _createPages(payload);
+        var controller = _createController(payload);
+        controller.animateTo(payload.index);
+        var keyString = payload.articles[payload.index].key;
+
         return ViewSection(
-          key: Key("news: ${snapshot.data.index}"),
+          key: Key("news: $keyString"),
           pages: pages,
           controller: controller,
         );

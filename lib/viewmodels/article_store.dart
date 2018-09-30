@@ -1,10 +1,12 @@
+import 'dart:async';
+
 import 'package:intl/intl.dart';
 
 import '../models/article.dart';
 
 import 'article_payload.dart';
+import 'article_link_model.dart';
 import 'drawer_vm.dart';
-
 
 class ArticleStore {
   Map<String, Article> _allArticles;
@@ -41,118 +43,132 @@ class ArticleStore {
     return DateFormat('yyyy-MM-dd').format(date);
   }
 
-  void addAllArticles(Map<String, Article> articles) {
-    articles.forEach( (k,v) {
-      this._allArticles[k] = v;
+  Future<void> addAllArticles(Map<String, Article> articles) {
+    return Future(() {
+      articles.forEach((k, v) {
+        this._allArticles[k] = v;
+      });
     });
   }
 
-  void setAllArticles(Map<String, Article> articles) {
-    this._allArticles = articles;
+  Future<void> setAllArticles(Map<String, Article> articles) {
+    return Future(() {
+      this._allArticles = articles;
+    });
   }
 
   String get newsArticle => _newsArticle;
-  void setNewsArticle(String key) {
-    this._newsArticle = key;
+
+  Future<void> setNewsArticle(String key) {
+    return Future(() {
+      this._newsArticle = key;
+    });
   }
 
   String get handbookArticle => _handbookArticle;
-  void setHandbookArticle(String key) {
-    this._handbookArticle = key;
+
+  Future<void> setHandbookArticle(String key) {
+    return Future(() {
+      this._handbookArticle = key;
+    });
   }
 
   String get pharmaArticle => _pharmaArticle;
-  void setPharmaArticle(String key) {
-    this._pharmaArticle = key;
+
+  Future<void> setPharmaArticle(String key) {
+    return Future(() {
+      this._pharmaArticle = key;
+    });
   }
 
-  Article _getArticleByKey(String key) {
-    return _allArticles[key];
-  }
-
-  List<Article> _getRelatedArticles(Article article) {
-    return article.related.map((a) {
-      var v = _getArticleByKey(a);
-      if (v == null) {
-        return Article(
-            key: a,
-            title: "",
-            date: null,
-            intro: "",
-            byline: "",
-            parent: "",
-            mdcontent: "",
-            children: <String>[],
-            related: <String>[]);
+  Future<Article> _getArticleByKey(String key) {
+    return Future(() {
+      Article a = _allArticles[key];
+      if (a == null) {
+        return Article.unknown(key: key);
       }
-      return v;
-    }).toList();
+      return a;
+    });
   }
 
-  Article _getParentArticle(Article article) {
+  Future<List<Article>> _getRelatedArticles(Article article) {
+    return Future.wait(article.related.map((k) {
+      return _getArticleByKey(k);
+    }).toList());
+  }
+
+  Future<Article> _getParentArticle(Article article) {
     return _getArticleByKey(article.parent);
   }
 
-  List<Article> _getChildren(Article article) {
-    return article.children.map((a) {
+  Future<List<Article>> _getChildren(Article article) {
+    return Future.wait(article.children.map((a) {
       return _getArticleByKey(a);
-    }).toList();
+    }).toList());
   }
 
-  List<Article> _getSiblings(Article article) {
-    var parent = _getParentArticle(article);
+  Future<List<Article>> _getSiblings(Article article) async {
+    var parent = await _getParentArticle(article);
     return _getChildren(parent);
   }
 
-  List<ArticleLinkModel> _getArticleLinks(List<Article> articles) {
-    return articles.map((x) {
-      return ArticleLinkModel(
-        key: x.key,
-        title: x.title,
-        intro: x.intro,
-      );
-    }).toList();
+  Future<List<ArticleLinkModel>> _getArticleLinks(List<Article> articles) {
+    return Future(() {
+      return articles.map((x) {
+        return ArticleLinkModel(
+          key: x.key,
+          title: x.title,
+          intro: x.intro,
+        );
+      }).toList();
+    });
   }
 
-  List<ArticleModel> _getArticleModels(List<Article> articles) {
-    return articles.map((v) {
+  Future<List<ArticleModel>> _getArticleModels(List<Article> articles) {
+    return Future.wait(articles.map((v) async {
+      var relatedArticles = await _getRelatedArticles(v);
+      var relatedLinks = await _getArticleLinks(relatedArticles);
       return ArticleModel(
         key: v.key,
         title: v.title,
         date: dateFormatter(v.date),
         byline: v.byline,
         mdcontent: v.mdcontent,
-        related: _getArticleLinks(_getRelatedArticles(v)),
+        related: relatedLinks,
       );
-    }).toList();
+    }).toList());
   }
 
-  ArticlePayloadModel _getArticlePayloadModel(Article a) {
-    var siblings = _getSiblings(a);
-    return ArticlePayloadModel(
-      articles: _getArticleModels(siblings),
-      index: siblings.indexOf(a),
-    );
+  Future<ArticlePayloadModel> _getArticlePayloadModel(Article a) async {
+    var siblings = await _getSiblings(a);
+    var index = siblings.indexOf(a);
+    var articles = await _getArticleModels(siblings);
+    return Future(() {
+      return ArticlePayloadModel(
+        articles: articles,
+        index: index,
+      );
+    });
   }
 
-  ArticlePayloadModel getNewsPayload() {
-    var newsArticle = _getArticleByKey(_newsArticle);
+  Future<ArticlePayloadModel> getNewsPayload() async {
+    var newsArticle = await _getArticleByKey(_newsArticle);
     return _getArticlePayloadModel(newsArticle);
   }
 
-  ArticlePayloadModel getHandbookPayload() {
-    var handbookArticle = _getArticleByKey(_handbookArticle);
+  Future<ArticlePayloadModel> getHandbookPayload() async {
+    var handbookArticle = await _getArticleByKey(_handbookArticle);
     return _getArticlePayloadModel(handbookArticle);
   }
 
-  ArticlePayloadModel getPharmaPayload() {
-    var pharmaArticle = _getArticleByKey(_pharmaArticle);
+  Future<ArticlePayloadModel> getPharmaPayload() async {
+    var pharmaArticle = await _getArticleByKey(_pharmaArticle);
     return _getArticlePayloadModel(pharmaArticle);
   }
 
-  DrawerVM _getDrawerVM(Article a) {
-    var siblings = _getSiblings(a);
-    var parent = _getParentArticle(a);
+  Future<DrawerVM> _getDrawerVM(Article a) async {
+    var siblings = await _getSiblings(a);
+    var parent = await _getParentArticle(a);
     var parentLink = ArticleLinkModel(
       key: parent.key,
       title: parent.title,
@@ -163,21 +179,22 @@ class ArticleStore {
       parentLink = null;
     }
     return DrawerVM(
-      articleLinks: _getArticleLinks(siblings),
+      articleLinks: await _getArticleLinks(siblings),
       parentLink: parentLink,
     );
   }
-  DrawerVM getDrawerVM(int tabIndex) {
-    var current = _getArticleByKey(_newsArticle);
+
+  Future<DrawerVM> getDrawerVM(int tabIndex) async {
+    var current = await _getArticleByKey(_newsArticle);
 
     if (tabIndex == 0) {
-      // article already done 
+      // article already done
     } else if (tabIndex == 1) {
-      current = _getArticleByKey(_handbookArticle);
+      current = await _getArticleByKey(_handbookArticle);
     } else if (tabIndex == 2) {
-      current = _getArticleByKey(_pharmaArticle);
+      current = await _getArticleByKey(_pharmaArticle);
     } else {
-      print ("error");
+      print("error");
     }
 
     return _getDrawerVM(current);

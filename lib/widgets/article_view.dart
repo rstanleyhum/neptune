@@ -16,9 +16,8 @@ class ArticleView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Directory baseDir =
-        Directory("/data/user/0/com.stanleyhum.neptune/app_flutter/");
     final appBloc = AppProvider.of(context);
+    Directory baseDir = appBloc.baseAppDirectory;
 
     return CustomScrollView(
       slivers: <Widget>[
