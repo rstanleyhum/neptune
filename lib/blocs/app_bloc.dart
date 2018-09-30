@@ -133,21 +133,21 @@ class AppBloc {
 
     _selectingArticle = true;
 
-    var section = event.split("!")[0];
-    if (section == "news") {
+    var section = event.split(globals.linkSeparator)[globals.prefixIndex];
+    if (section == globals.newsTabPrefix) {
       await _articleStore.setNewsArticle(event);
       var newsPayload = await _articleStore.getNewsPayload();
       _newsPayloadSubject.add(newsPayload);
-      _appState.setTabIndex(0);
-    } else if (section == "handbook") {
+      _appState.setTabIndex(globals.newsTabIndex);
+    } else if (section == globals.handbookTabPrefix) {
       await _articleStore.setHandbookArticle(event);
       var handbookPayload = await _articleStore.getHandbookPayload();
       _handbookPayloadSubject.add(handbookPayload);
-      _appState.setTabIndex(1);
-    } else if (section == "pharma") {
+      _appState.setTabIndex(globals.handbookTabIndex);
+    } else if (section == globals.pharmaTabPrefix) {
       _articleStore.setPharmaArticle(event);
       _pharmaPayloadSubject.add(await _articleStore.getPharmaPayload());
-      _appState.setTabIndex(2);
+      _appState.setTabIndex(globals.pharmaTabIndex);
     } else {
       analytics.logEvent(
         name: 'handleSelectArticelEvent_ERROR',
@@ -229,7 +229,7 @@ class AppBloc {
     });
     await _articleStore.addAllArticles(allArticles);
     _appState.setHandbookArticlesLoading(false);
-    _notifyNewArticlesLoaded.add(1);
+    _notifyNewArticlesLoaded.add(globals.handbookTabIndex);
   }
 
   void _handleFirestoreNewsCollection(QuerySnapshot event) async {
@@ -241,7 +241,7 @@ class AppBloc {
     });
     await _articleStore.addAllArticles(allArticles);
     _appState.setNewsArticlesLoading(false);
-    _notifyNewArticlesLoaded.add(0);
+    _notifyNewArticlesLoaded.add(globals.newsTabIndex);
   }
 
   void _handleFirestorePharmaCollection(QuerySnapshot event) async {
@@ -253,12 +253,11 @@ class AppBloc {
     });
     await _articleStore.addAllArticles(allArticles);
     _appState.setPharmaArticlesLoading(false);
-    _notifyNewArticlesLoaded.add(2);
+    _notifyNewArticlesLoaded.add(globals.pharmaTabIndex);
   }
 
   void _handleFirestoreChonyImagesCollection(QuerySnapshot event) {
     event.documents.forEach((d) {
-      //var key = d.data['key'];
       var objectName = d.data['objectName'];
       var bucketName = d.data['bucketName'];
 

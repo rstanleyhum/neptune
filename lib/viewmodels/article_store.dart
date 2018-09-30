@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:intl/intl.dart';
 
+import '../constants.dart' as globals;
+
 import '../models/article.dart';
 
 import 'article_payload.dart';
@@ -40,7 +42,7 @@ class ArticleStore {
   }
 
   static String dateFormatter(DateTime date) {
-    return DateFormat('yyyy-MM-dd').format(date);
+    return DateFormat(globals.dateFormat).format(date);
   }
 
   Future<void> addAllArticles(Map<String, Article> articles) {
@@ -174,8 +176,8 @@ class ArticleStore {
       title: parent.title,
       intro: parent.intro,
     );
-    var parentArticle = parent.parent.split("!")[1];
-    if (parentArticle == "index.md") {
+    var parentArticle = parent.parent.split(globals.linkSeparator)[globals.articleIndex];
+    if (parentArticle == globals.rootArticleName) {
       parentLink = null;
     }
     return DrawerVM(
@@ -187,11 +189,11 @@ class ArticleStore {
   Future<DrawerVM> getDrawerVM(int tabIndex) async {
     var current = await _getArticleByKey(_newsArticle);
 
-    if (tabIndex == 0) {
+    if (tabIndex == globals.newsTabIndex) {
       // article already done
-    } else if (tabIndex == 1) {
+    } else if (tabIndex == globals.handbookTabIndex) {
       current = await _getArticleByKey(_handbookArticle);
-    } else if (tabIndex == 2) {
+    } else if (tabIndex == globals.pharmaTabIndex) {
       current = await _getArticleByKey(_pharmaArticle);
     } else {
       print("error");
