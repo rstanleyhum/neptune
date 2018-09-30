@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
 import 'blocs/app_bloc.dart';
@@ -8,10 +9,12 @@ import 'widgets/material_base.dart';
 
 class MainApp extends StatelessWidget {
   final Firestore firestore;
+  final FirebaseStorage firebaseStorage;
 
   MainApp({
     Key key,
     this.firestore,
+    this.firebaseStorage,
   }) : super(key: key);
 
   @override
@@ -19,6 +22,7 @@ class MainApp extends StatelessWidget {
     return AppProvider(
       appBloc: AppBloc(
         firestore: firestore,
+        firebaseStorage: firebaseStorage,
       ),
       child: MaterialBase(),
     );

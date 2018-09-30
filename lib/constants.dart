@@ -1,5 +1,13 @@
 import 'package:flutter/material.dart';
 
+
+const String storageBucketRoot = "gs://logindemo-5f7b4.appspot.com";
+const String firestoreHandbookCollectionURL = "pediatrics/chony/chony_handbook";
+const String firestoreNewsCollectionURL = "pediatrics/chony/news";
+const String firestorePharmaCollectionURL = "pediatrics/chony/pharma";
+const String firestoreChonyImagesCollectionURL = "pediatrics/chony/chony_images";
+const String firebaseStorageHandbookImagesDir = "assets/pediatrics/chony_handbook/images";
+
 const String materialAppTitle = 'Neptune Demo';
 
 const String handbookTabTitle = 'Handbook';

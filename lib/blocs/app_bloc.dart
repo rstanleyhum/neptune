@@ -1,8 +1,12 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:rxdart/rxdart.dart';
+
+import 'package:path_provider/path_provider.dart';
 
 import '../constants.dart' as globals;
 
@@ -13,10 +17,9 @@ import '../viewmodels/article_payload.dart';
 import '../viewmodels/ui_state.dart';
 import '../viewmodels/drawer_vm.dart';
 
-import '../services/local_service.dart';
-
 class AppBloc {
   final Firestore firestore;
+  final FirebaseStorage firebaseStorage;
 
   static FirebaseAnalytics analytics = new FirebaseAnalytics();
 
@@ -38,26 +41,50 @@ class AppBloc {
   final _pharmaPayloadSubject = BehaviorSubject<ArticlePayloadModel>();
   final _drawerVMSubject = BehaviorSubject<DrawerVM>();
 
-  AppBloc({
-    this.firestore,
-  }) {
+  void _createImagesDirectory() async {
+    final directory = await getApplicationDocumentsDirectory();
+    var imagesDirPath = "${directory.path}/images/";
+    await Directory(imagesDirPath)
+        .create(recursive: true)
+        .then((Directory directory) {})
+        .catchError((e) {
+      print(e);
+    });
+  }
+
+  void _setUpListeners() {
     firestore
-        .collection('pediatrics/chony/chony_handbook')
+        .collection(globals.firestoreHandbookCollectionURL)
         .snapshots()
         .listen(_handleFirestoreHandbookCollection);
 
     firestore
-        .collection('pediatrics/chony/news')
+        .collection(globals.firestoreNewsCollectionURL)
         .snapshots()
         .listen(_handleFirestoreNewsCollection);
     firestore
-        .collection('pediatrics/chony/pharma')
+        .collection(globals.firestorePharmaCollectionURL)
         .snapshots()
         .listen(_handleFirestorePharmaCollection);
+
+    firestore
+        .collection(globals.firestoreChonyImagesCollectionURL)
+        .snapshots()
+        .listen(_handleFirestoreChonyImagesCollection);
+
     _setTabIndexController.stream.listen(_handleSetTabIndex);
+    _setArticleEventController.stream.listen(_handleSelectArticleEvent);
+  }
+
+  AppBloc({
+    this.firestore,
+    this.firebaseStorage,
+  }) {
+    _createImagesDirectory();
+
+    _setUpListeners();
 
     loadArticles();
-    _setArticleEventController.stream.listen(_handleSelectArticleEvent);
   }
 
   void dispose() {
@@ -105,7 +132,8 @@ class AppBloc {
   void loadArticles() async {
     _articleStore.setLoading();
     _isLoadingSubject.add(_articleStore.isLoading);
-    await LocalService.loadImages();
+    //await LocalService.loadImages();
+    await Future.delayed(Duration(seconds: globals.loadArticlesDelay + 10));
     _articleStore.setNewsArticle(globals.initialNewsArticle);
     _articleStore.setHandbookArticle(globals.initialHandbookArticle);
     _articleStore.setPharmaArticle(globals.initialPharmaArticle);
@@ -236,5 +264,36 @@ class AppBloc {
       allArticles[a.key] = a;
     });
     _articleStore.addAllArticles(allArticles);
+  }
+
+  void _handleFirestoreChonyImagesCollection(QuerySnapshot event) async {
+    event.documents.forEach((d) {
+      //var key = d.data['key'];
+      var objectName = d.data['objectName'];
+      var bucketName = d.data['bucketName'];
+
+      _loadAndSaveImage(objectName, bucketName);
+    });
+  }
+
+  Future<void> _loadAndSaveImage(String fn, String b) async {
+    final directory = await getApplicationDocumentsDirectory();
+    var imagesDirPath = "${directory.path}/images/";
+    var filename = "$imagesDirPath${fn.toLowerCase()}";
+
+
+    if (await File(filename).exists()) {
+      return;
+    }
+
+    try {
+      firebaseStorage
+          .ref()
+          .child(globals.firebaseStorageHandbookImagesDir)
+          .child(fn)
+          .writeToFile(File(filename));
+    } catch (e) {
+      print(e);
+    }
   }
 }
