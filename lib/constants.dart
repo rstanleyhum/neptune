@@ -50,7 +50,6 @@ const String splashPageTitle = "Splash Page";
 const String disclaimerTitle = "Disclaimer";
 const String disclaimerButtonText = "I accept";
 
-const int loadArticlesDelay = 5; // for debugging
 const int splashPageDelay = 3;
 
 const String initialNewsArticle = "news!news1.md";
@@ -60,3 +59,5 @@ const String initialPharmaArticle = "pharma!pharma1.md";
 const double defaultHeightOfAndroidStatusBar = 24.0;
 
 const String dateFormat = "yyyy-MM-dd";
+
+const String disclaimerStateKey = "disclaimerState";
