@@ -38,6 +38,13 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
+  flutter_launcher_icons: ^0.6.1
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "icons/md_handbook_icon_1536x1536.2018_10_02_2.png"
+
 
 # For information on the generic Dart part of this file, see the
 # following page: https://www.dartlang.org/tools/pub/pubspec
