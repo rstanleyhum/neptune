@@ -6,6 +6,8 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import '../providers/app_provider.dart';
 import '../viewmodels/article_payload.dart';
 
+import 'image_viewer.dart';
+
 class ArticleView extends StatelessWidget {
   final ArticleModel vm;
 
@@ -13,6 +15,31 @@ class ArticleView extends StatelessWidget {
     Key key,
     this.vm,
   }) : super(key: key);
+
+  void _handleTapLink(BuildContext context, String url, Directory baseDir) {
+    var parts = url.split("://");
+    if (parts.length != 2) {
+      return;
+    }
+
+    var prefix = parts[0];
+    if (prefix != "hybrid-image") {
+      return;
+    }
+
+    var fn = parts[1];
+    String filepath = "${baseDir.path}/$fn";
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) {
+          return ImageViewer(
+            filepath: filepath,
+          );
+        },
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +70,7 @@ class ArticleView extends StatelessWidget {
                 padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 5.0),
                 child: MarkdownBody(
                   data: vm.mdcontent,
+                  onTapLink: (url) => _handleTapLink(context, url, baseDir),
                   imageDirectory: baseDir,
                 ),
               ),
