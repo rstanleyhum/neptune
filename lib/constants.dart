@@ -13,15 +13,18 @@ const String materialAppTitle = 'Neptune Demo';
 const String handbookTabTitle = 'Handbook';
 const String newsTabTitle = 'News';
 const String pharmaTabTitle = 'Pharma';
+const String aboutTabTitle = 'About';
 
 const String handbookTabPrefix = 'handbook';
 const String newsTabPrefix = 'news';
 const String pharmaTabPrefix = 'pharma';
+const String aboutTabPrefix = 'about';
 
 const int initialTabIndex = 0;
 const int newsTabIndex = 0;
 const int handbookTabIndex = 1;
 const int pharmaTabIndex = 2;
+const int aboutTabIndex = 3;
 const String initialTabTitle = newsTabTitle;
 
 const String linkSeparator = "!";
@@ -34,6 +37,7 @@ const String handbookViewportMessage = 'Handbook Viewport';
 const String newsViewportMessage = 'News Viewport';
 const String pharmaViewportMessage = 'Pharma Viewport';
 
+
 const String mainDrawerHeaderTitle = 'MD Handbook';
 const double mainDrawerHeaderFontSize = 24.0;
 
@@ -45,6 +49,7 @@ const Color themeColor = Colors.blue;
 const IconData handbookIcon = Icons.library_books;
 const IconData newsIcon = Icons.local_cafe;
 const IconData pharmaIcon = Icons.local_pharmacy;
+const IconData aboutIcon = Icons.settings;
 
 const String splashPageTitle = "Splash Page";
 const String disclaimerTitle = "Disclaimer";

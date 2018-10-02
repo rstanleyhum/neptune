@@ -6,6 +6,7 @@ import '../providers/app_provider.dart';
 import 'news_tab.dart';
 import 'handbook_tab.dart';
 import 'pharma_tab.dart';
+import 'about_tab.dart';
 
 class BottomBar extends StatefulWidget {
   @override
@@ -25,6 +26,7 @@ class _BottomBarState extends State<BottomBar> {
             NewsTab(),
             HandbookTab(),
             PharmaTab(),
+            AboutTab(),
           ],
           type: BottomNavigationBarType.fixed,
           currentIndex: snapshot.data,

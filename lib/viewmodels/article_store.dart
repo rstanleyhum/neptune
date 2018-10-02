@@ -195,6 +195,8 @@ class ArticleStore {
       current = await _getArticleByKey(_handbookArticle);
     } else if (tabIndex == globals.pharmaTabIndex) {
       current = await _getArticleByKey(_pharmaArticle);
+    } else if (tabIndex == globals.aboutTabIndex) {
+      //current = _getAboutDrawerVM();
     } else {
       print("error");
     }

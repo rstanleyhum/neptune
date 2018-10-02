@@ -45,6 +45,17 @@ class ViewportControl extends StatelessWidget {
                 child: PharmaSectionControl(),
               ),
             ),
+            Offstage(
+              offstage: snapshot.data != globals.aboutTabIndex,
+              child: TickerMode(
+                enabled: snapshot.data == globals.aboutTabIndex,
+                child: Container(
+                  child: Center(
+                    child: Text("about page"),
+                  ),
+                ),
+              ),
+            ),
           ],
         );
       },
