@@ -7,6 +7,7 @@ import '../providers/app_provider.dart';
 import 'news_section_control.dart';
 import 'handbook_section_control.dart';
 import 'pharma_section_control.dart';
+import 'about_section_view.dart';
 
 class ViewportControl extends StatelessWidget {
   @override
@@ -49,11 +50,7 @@ class ViewportControl extends StatelessWidget {
               offstage: snapshot.data != globals.aboutTabIndex,
               child: TickerMode(
                 enabled: snapshot.data == globals.aboutTabIndex,
-                child: Container(
-                  child: Center(
-                    child: Text("about page"),
-                  ),
-                ),
+                child: AboutSectionView(),
               ),
             ),
           ],
