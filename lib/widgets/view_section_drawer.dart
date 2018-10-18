@@ -17,6 +17,22 @@ class ViewSectionDrawer extends StatelessWidget {
         var tiles = <Widget>[];
 
         if (snapshot != null && snapshot.hasData) {
+          tiles
+            ..add(
+              Container(
+                padding: EdgeInsets.only(
+                    left: 10.0, right: 20.0, top: 10.0, bottom: 5.0),
+                child: Text(
+                  "Links:",
+                  style: TextStyle(
+                    fontSize: 12.0,
+                    fontStyle: FontStyle.italic,
+                    color: Colors.grey,
+                  ),
+                ),
+              ),
+            );
+
           if (snapshot.data.parentLink != null) {
             tiles
               ..add(GestureDetector(
@@ -26,7 +42,7 @@ class ViewSectionDrawer extends StatelessWidget {
                 },
                 child: Container(
                   padding: EdgeInsets.only(
-                      left: 10.0, right: 20.0, top: 10.0, bottom: 0.0),
+                      left: 10.0, right: 20.0, top: 0.0, bottom: 10.0),
                   child: Text(
                     snapshot.data.parentLink.title,
                     style:
@@ -46,7 +62,7 @@ class ViewSectionDrawer extends StatelessWidget {
                   },
                   child: Container(
                     padding: EdgeInsets.only(
-                        left: 20.0, right: 20.0, top: 20.0, bottom: 0.0),
+                        left: 24.0, right: 20.0, top: 0.0, bottom: 12.0),
                     child: Text(
                       v.title,
                       style: TextStyle(
@@ -60,7 +76,7 @@ class ViewSectionDrawer extends StatelessWidget {
           tiles
             ..add(
               Container(
-                height: 30.0,
+                height: 20.0,
               ),
             );
         }

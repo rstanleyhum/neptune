@@ -74,41 +74,35 @@ class ArticleView extends StatelessWidget {
                   imageDirectory: baseDir,
                 ),
               ),
-            ],
-          ),
-        ),
-
-        // Related List Links
-        SliverFixedExtentList(
-          itemExtent: 20.0,
-          delegate: SliverChildListDelegate(
-            []..addAll(
-                vm.related.map((v) {
-                  return GestureDetector(
-                    onTap: () {
-                      appBloc.sendArticleSelect.add(v.key);
-                    },
-                    child: Container(
-                      padding: EdgeInsets.only(
-                          left: 10.0, right: 10.0, top: 0.0, bottom: 0.0),
-                      child: Text(v.title,
+            ]
+              ..addAll(
+                vm.related.map(
+                  (v) {
+                    return GestureDetector(
+                      onTap: () {
+                        appBloc.sendArticleSelect.add(v.key);
+                      },
+                      child: Container(
+                        padding: EdgeInsets.only(
+                            left: 10.0, right: 10.0, top: 5.0, bottom: 5.0),
+                        child: Text(
+                          v.title,
                           style: TextStyle(
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.w400,
                               color: Colors.blue,
-                              decoration: TextDecoration.underline)),
-                    ),
-                  );
-                }),
+                              decoration: TextDecoration.underline),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              )
+              ..add(
+                Container(
+                  height: 30.0,
+                ),
               ),
-          ),
-        ),
-
-        SliverList(
-          delegate: SliverChildListDelegate(
-            [
-              Container(
-                height: 30.0,
-              ),
-            ],
           ),
         ),
       ],
