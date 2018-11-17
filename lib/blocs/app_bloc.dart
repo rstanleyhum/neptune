@@ -28,6 +28,11 @@ class AppBloc {
 
   final _setTabIndexController = StreamController<int>();
   final _setArticleEventController = StreamController<String>();
+
+  final _updateNewsArticle = StreamController<String>();
+  final _updateHandbookArticle = StreamController<String>();
+  final _updatePharmaArticle = StreamController<String>();
+
   final _notifyNewArticlesLoaded = StreamController<int>();
 
   final _tabIndexSubject = BehaviorSubject<int>();
@@ -42,6 +47,10 @@ class AppBloc {
 
   Sink<int> get setTabIndex => _setTabIndexController.sink;
   Sink<String> get sendArticleSelect => _setArticleEventController.sink;
+
+  Sink<String> get sendNewsUpdate => _updateNewsArticle.sink;
+  Sink<String> get sendHandbookUpdate => _updateHandbookArticle.sink;
+  Sink<String> get sendPharmaUpdate => _updatePharmaArticle.sink;
 
   Stream<int> get tabIndex => _tabIndexSubject.stream;
   Stream<bool> get isLoading => _isLoadingSubject.stream;
@@ -70,6 +79,11 @@ class AppBloc {
     _notifyNewArticlesLoaded.close();
 
     _setArticleEventController.close();
+
+    _updateHandbookArticle.close();
+    _updateNewsArticle.close();
+    _updatePharmaArticle.close();
+
     _isLoadingSubject.close();
     _isLoadedSubject.close();
     _newsPayloadSubject.close();
@@ -99,6 +113,11 @@ class AppBloc {
 
     _setTabIndexController.stream.listen(_handleSetTabIndex);
     _setArticleEventController.stream.listen(_handleSelectArticleEvent);
+
+    _updateHandbookArticle.stream.listen(_handleHandbookUpdateEvent);
+    _updateNewsArticle.stream.listen(_handleNewsUpdateEvent);
+    _updatePharmaArticle.stream.listen(_handlePharmaUpdateEvent);
+
     _notifyNewArticlesLoaded.stream.listen(_handleNewArticlesLoaded);
   }
 
@@ -145,8 +164,9 @@ class AppBloc {
       _handbookPayloadSubject.add(handbookPayload);
       _appState.setTabIndex(globals.handbookTabIndex);
     } else if (section == globals.pharmaTabPrefix) {
-      _articleStore.setPharmaArticle(event);
-      _pharmaPayloadSubject.add(await _articleStore.getPharmaPayload());
+      await _articleStore.setPharmaArticle(event);
+      var pharmaPayload = await _articleStore.getPharmaPayload();
+      _pharmaPayloadSubject.add(pharmaPayload);
       _appState.setTabIndex(globals.pharmaTabIndex);
     } else {
       analytics.logEvent(
@@ -299,5 +319,17 @@ class AppBloc {
       _pharmaPayloadSubject.add(await _articleStore.getPharmaPayload());
       _drawerVMSubject.add(await _articleStore.getDrawerVM(_appState.tabIndex));
     }
+  }
+
+  void _handleHandbookUpdateEvent(String event) async {
+    await _articleStore.setHandbookArticle(event);
+  }
+
+  void _handleNewsUpdateEvent(String event) async {
+    await _articleStore.setNewsArticle(event);
+  }
+
+  void _handlePharmaUpdateEvent(String event) async {
+    await _articleStore.setPharmaArticle(event);
   }
 }

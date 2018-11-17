@@ -4,10 +4,8 @@ import '../constants.dart' as globals;
 
 import '../providers/app_provider.dart';
 
-import 'news_section_control.dart';
-import 'handbook_section_control.dart';
-import 'pharma_section_control.dart';
 import 'about_section_view.dart';
+import 'section_control.dart';
 
 class ViewportControl extends StatelessWidget {
   @override
@@ -29,21 +27,36 @@ class ViewportControl extends StatelessWidget {
               offstage: snapshot.data != globals.newsTabIndex,
               child: TickerMode(
                 enabled: snapshot.data == globals.newsTabIndex,
-                child: NewsSectionControl(),
+                child: SectionControl(
+                  key: Key("NewsSectionControl"),
+                  inStream: appBloc.newsPayload,
+                  sendUpdate: appBloc.sendNewsUpdate,
+                  tabPrefix: "news",
+                ),
               ),
             ),
             Offstage(
               offstage: snapshot.data != globals.handbookTabIndex,
               child: TickerMode(
                 enabled: snapshot.data == globals.handbookTabIndex,
-                child: HandbookSectionControl(),
+                child: SectionControl(
+                  key: Key("HandbookSectionControl"),
+                  inStream: appBloc.handbookPayload,
+                  sendUpdate: appBloc.sendHandbookUpdate,
+                  tabPrefix: "handbook",
+                ),
               ),
             ),
             Offstage(
               offstage: snapshot.data != globals.pharmaTabIndex,
               child: TickerMode(
                 enabled: snapshot.data == globals.pharmaTabIndex,
-                child: PharmaSectionControl(),
+                child: SectionControl(
+                  key: Key("PharmaSectionControl"),
+                  inStream: appBloc.pharmaPayload,
+                  sendUpdate: appBloc.sendPharmaUpdate,
+                  tabPrefix: "pharma",
+                ),
               ),
             ),
             Offstage(
