@@ -5,7 +5,7 @@ import '../constants.dart' as globals;
 import 'about_paragraph.dart';
 import 'about_title.dart';
 
-List<Widget> AboutContactUsText() {
+List<Widget> aboutContactUsText() {
   return <Widget>[
     AboutTitle(
       text: globals.aboutContactUsTitle,

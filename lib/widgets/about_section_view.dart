@@ -15,7 +15,7 @@ class _AboutSectionViewState extends State<AboutSectionView> {
 
   @override
   void initState() {
-    this.information = AboutDisclaimerText();
+    this.information = aboutDisclaimerText();
     super.initState();
   }
 
@@ -45,7 +45,7 @@ class _AboutSectionViewState extends State<AboutSectionView> {
                     child: Text(globals.aboutDisclaimerTitle),
                     onPressed: () {
                       setState(() {
-                        this.information = AboutDisclaimerText();
+                        this.information = aboutDisclaimerText();
                       });
                     },
                   ),
@@ -59,7 +59,7 @@ class _AboutSectionViewState extends State<AboutSectionView> {
                     child: Text(globals.aboutContactUsTitle),
                     onPressed: () {
                       setState(() {
-                        this.information = AboutContactUsText();
+                        this.information = aboutContactUsText();
                       });
                     },
                   ),
