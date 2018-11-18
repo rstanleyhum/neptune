@@ -4,7 +4,7 @@ import '../constants.dart' as globals;
 import '../providers/app_provider.dart';
 
 import 'view_section_drawer.dart';
-import 'about_drawer.dart';
+import 'empty_drawer.dart';
 
 class AppDrawer extends StatelessWidget {
   @override
@@ -17,7 +17,7 @@ class AppDrawer extends StatelessWidget {
         if (snapshot != null &&
             snapshot.hasData &&
             snapshot.data == globals.aboutTabIndex) {
-          return AboutDrawer();
+          return EmptyDrawer();
         }
         return ViewSectionDrawer();
       },

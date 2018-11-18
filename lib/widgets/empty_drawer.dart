@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'app_drawer_header.dart';
 
-class AboutDrawer extends StatelessWidget {
+class EmptyDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var tiles = <Widget>[];
