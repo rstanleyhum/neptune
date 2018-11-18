@@ -41,9 +41,6 @@ const String pharmaViewportMessage = 'Pharma Viewport';
 const String mainDrawerHeaderTitle = 'MD Handbook';
 const double mainDrawerHeaderFontSize = 24.0;
 
-//const String drawerItemOne = 'Item 1';
-//const String drawerItemTwo = 'Item 2';
-
 const Color themeColor = Colors.blue;
 
 const IconData handbookIcon = Icons.library_books;
@@ -51,7 +48,6 @@ const IconData newsIcon = Icons.local_cafe;
 const IconData pharmaIcon = Icons.local_pharmacy;
 const IconData aboutIcon = Icons.settings;
 
-//const String splashPageTitle = "Splash Page";
 const String disclaimerTitle = "Disclaimer";
 const String disclaimerButtonText = "I accept";
 
