@@ -10,14 +10,17 @@ import 'constants.dart' as globals;
 import 'main_app.dart';
 
 Future<void> main() async {
-
   final Firestore firestore = new Firestore();
+
   final FirebaseStorage storage =
       new FirebaseStorage(storageBucket: globals.storageBucketRoot);
+
   final FirebaseAuth auth = FirebaseAuth.instance;
 
-  await auth.signInAnonymously();
-  await firestore.enablePersistence(true);
+  final FirebaseUser user = await auth.signInAnonymously();
+  assert(user != null);
+  assert(user.isAnonymous);
+  assert(!user.isEmailVerified);
 
   final baseDirectory = await getApplicationDocumentsDirectory();
   final imageDir = "${baseDirectory.path}/images/";
