@@ -53,9 +53,9 @@ const String disclaimerButtonText = "I accept";
 
 const int splashPageDelay = 3;
 
-const String initialNewsArticle = "news!news1.md";
+const String initialNewsArticle = "news!current.md";
 const String initialHandbookArticle = "handbook!icu_section.md";
-const String initialPharmaArticle = "pharma!pharma1.md";
+const String initialPharmaArticle = "pharma!vasoactives_section.md";
 
 const double defaultHeightOfAndroidStatusBar = 24.0;
 
